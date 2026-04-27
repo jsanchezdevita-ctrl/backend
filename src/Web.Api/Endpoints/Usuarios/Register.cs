@@ -44,8 +44,8 @@ internal sealed class Register : IEndpoint
                 id => Results.Created($"/usuarios/{id}", id),
                 CustomResults.Problem);
         })
-        .RequireAuthorization()
-        .HasPermission(Permissions.Admin)
+        //.RequireAuthorization()
+        //.HasPermission(Permissions.Admin)
         .WithTags(Tags.Usuarios);
     }
 }

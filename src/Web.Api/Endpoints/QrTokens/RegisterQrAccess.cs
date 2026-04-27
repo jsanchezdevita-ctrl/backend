@@ -29,8 +29,8 @@ internal sealed class RegisterQrAccess : IEndpoint
                 validateQrTokenResponse => Results.Ok(validateQrTokenResponse),
                 CustomResults.Problem);
         })
-        //.RequireAuthorization()
-        //.HasPermission(Permissions.Admin)
+        ////.RequireAuthorization()
+        ////.HasPermission(Permissions.Admin)
         .WithTags(Tags.QrTokens);
     }
 }

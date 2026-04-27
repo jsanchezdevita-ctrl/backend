@@ -21,8 +21,8 @@ internal sealed class GetById : IEndpoint
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })
-        //.RequireAuthorization()
-        //.HasPermission(Permissions.Admin)
+        ////.RequireAuthorization()
+        ////.HasPermission(Permissions.Admin)
         .AllowAnonymous()
         .WithTags(Tags.PuntosControl);
     }

@@ -33,8 +33,8 @@ internal sealed class Create : IEndpoint
                 id => Results.Created($"/zonas/{id}", id),
                 CustomResults.Problem);
         })
-        .RequireAuthorization()
-        .HasPermission(Permissions.Admin)
+        //.RequireAuthorization()
+        //.HasPermission(Permissions.Admin)
         .WithTags(Tags.Zonas);
     }
 }

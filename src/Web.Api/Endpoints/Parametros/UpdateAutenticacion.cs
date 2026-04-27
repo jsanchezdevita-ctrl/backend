@@ -21,8 +21,8 @@ internal sealed class UpdateAutenticacion : IEndpoint
                 () => Results.NoContent(),
                 CustomResults.Problem);
         })
-        .RequireAuthorization()
-        .HasPermission(Permissions.Admin)
+        //.RequireAuthorization()
+        //.HasPermission(Permissions.Admin)
         .WithTags(Tags.Parametros);
     }
 }

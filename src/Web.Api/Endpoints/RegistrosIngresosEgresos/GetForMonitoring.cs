@@ -37,8 +37,8 @@ internal sealed class GetForMonitoring : IEndpoint
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })
-        //.RequireAuthorization()
-        //.HasPermission(Permissions.Admin)
+        ////.RequireAuthorization()
+        ////.HasPermission(Permissions.Admin)
         .WithTags(Tags.RegistrosIngresosEgresos);
     }
 }

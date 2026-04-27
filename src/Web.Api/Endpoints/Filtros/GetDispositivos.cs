@@ -24,8 +24,8 @@ internal sealed class GetDispositivos : IEndpoint
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })
-        //.RequireAuthorization()
-        //.HasPermission(Permissions.Admin)
+        ////.RequireAuthorization()
+        ////.HasPermission(Permissions.Admin)
         .AllowAnonymous()
         .WithTags(Tags.Filtros);
     }

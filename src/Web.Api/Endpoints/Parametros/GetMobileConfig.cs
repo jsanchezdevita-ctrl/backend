@@ -21,8 +21,8 @@ internal sealed class GetMobileConfig : IEndpoint
                 Results.Ok,
                 CustomResults.Problem);
         })
-        .RequireAuthorization()
-        .HasPermission(Permissions.Admin)
+        //.RequireAuthorization()
+        //.HasPermission(Permissions.Admin)
         .WithTags(Tags.Parametros);
     }
 }

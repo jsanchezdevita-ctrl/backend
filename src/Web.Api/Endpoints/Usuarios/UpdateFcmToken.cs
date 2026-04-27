@@ -30,8 +30,8 @@ internal sealed class UpdateFcmToken : IEndpoint
                 }),
                 CustomResults.Problem);
         })
-        //.RequireAuthorization()
-        //.HasPermission(Permissions.Admin)
+        ////.RequireAuthorization()
+        ////.HasPermission(Permissions.Admin)
         .WithTags(Tags.Usuarios);
     }
 }
