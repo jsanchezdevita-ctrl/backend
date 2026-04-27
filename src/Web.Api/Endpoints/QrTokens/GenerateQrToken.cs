@@ -25,8 +25,8 @@ internal sealed class GenerateQrToken : IEndpoint
                 tokenResponse => Results.Ok(tokenResponse),
                 CustomResults.Problem);
         })
-        .RequireAuthorization()
-        .HasPermission(Permissions.Admin)
+        //.RequireAuthorization()
+        //.HasPermission(Permissions.Admin)
         .WithTags(Tags.QrTokens);
     }
 }

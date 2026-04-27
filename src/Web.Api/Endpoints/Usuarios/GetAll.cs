@@ -23,8 +23,8 @@ internal sealed class GetAll : IEndpoint
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })
-        .RequireAuthorization()
-        .HasPermission(Permissions.Usuarios)
+        //.RequireAuthorization()
+        //.HasPermission(Permissions.Usuarios)
         .WithTags(Tags.Usuarios);
     }
 }
