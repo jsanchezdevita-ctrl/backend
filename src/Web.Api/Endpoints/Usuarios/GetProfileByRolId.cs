@@ -21,8 +21,8 @@ internal sealed class GetProfileByRolId : IEndpoint
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })
-        .RequireAuthorization()
-        .HasPermission(Permissions.Admin)
+        //.RequireAuthorization()
+        //.HasPermission(Permissions.Admin)
         .WithTags(Tags.Usuarios);
     }
 }

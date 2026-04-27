@@ -20,8 +20,8 @@ internal sealed class GetById : IEndpoint
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })
-        .RequireAuthorization()
-        .HasAnyPermission(Permissions.Admin, Permissions.Usuarios)
+        //.RequireAuthorization()
+        //.HasAnyPermission(Permissions.Admin, Permissions.Usuarios)
         .WithTags(Tags.Usuarios);
     }
 }

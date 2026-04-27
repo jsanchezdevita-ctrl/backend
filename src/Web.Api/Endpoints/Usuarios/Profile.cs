@@ -19,7 +19,7 @@ internal sealed class Profile : IEndpoint
             Result<UserProfileResponse> result = await handler.Handle(query, cancellationToken);
             return result.Match(Results.Ok, CustomResults.Problem);
         })
-        .RequireAuthorization()
+        //.RequireAuthorization()
         .WithTags(Tags.Usuarios);
     }
 }
