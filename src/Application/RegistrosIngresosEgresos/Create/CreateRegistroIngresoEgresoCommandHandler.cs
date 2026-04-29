@@ -304,7 +304,7 @@ internal sealed class CreateRegistroIngresoEgresoCommandHandler(
         {
             if (!esEntrada)
             {
-                return (false, "El primer registro debe ser una entrada.");
+                return (false, "Se debe iniciar con entrada.");
             }
             return (true, string.Empty);
         }
