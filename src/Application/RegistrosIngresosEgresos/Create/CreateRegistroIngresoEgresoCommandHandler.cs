@@ -304,7 +304,7 @@ internal sealed class CreateRegistroIngresoEgresoCommandHandler(
         {
             if (!esEntrada)
             {
-                return (false, "No tiene una entrada activa para registrar una salida. El primer registro debe ser una entrada.");
+                return (false, "El primer registro debe ser una entrada.");
             }
             return (true, string.Empty);
         }
@@ -318,7 +318,7 @@ internal sealed class CreateRegistroIngresoEgresoCommandHandler(
         {
             if (esEntrada)
             {
-                return (false, "Ya tiene una entrada activa. Debe registrar una salida primero.");
+                return (false, "Ya tiene una entrada activa.");
             }
             return (true, string.Empty);
         }
@@ -328,7 +328,7 @@ internal sealed class CreateRegistroIngresoEgresoCommandHandler(
         {
             if (!esEntrada)
             {
-                return (false, "No tiene una entrada activa para registrar una salida.");
+                return (false, "No tiene una entrada activa.");
             }
             return (true, string.Empty);
         }
