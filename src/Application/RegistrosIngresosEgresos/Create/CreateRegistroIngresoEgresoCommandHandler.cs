@@ -75,23 +75,6 @@ internal sealed class CreateRegistroIngresoEgresoCommandHandler(
         Guid? zonaId = null;
         bool esDenegado = false;
 
-        // ===== NUEVA VALIDACIÓN NO FATAL: SECUENCIA ENTRADA/SALIDA =====
-        // Solo aplicar si aún no ha sido denegado y el estado es Autorizado
-        if (!esDenegado && estadoRegistro.Descripcion == "Autorizado" && estadoRegistro.AfectaEspacio)
-        {
-            var (esValido, mensajeError) = await ValidarSecuenciaEntradaSalida(
-                command.UsuarioId,
-                esEntrada,
-                cancellationToken);
-
-            if (!esValido)
-            {
-                observacion = mensajeError;
-                esDenegado = true;
-            }
-        }
-        // ===== FIN VALIDACIÓN SECUENCIA =====
-
         // 1. Validar ZonaRol
         var zonaRolConRol = await context.ZonasRoles
             .Where(zr => zr.Id == command.ZonaRolId)
@@ -112,6 +95,23 @@ internal sealed class CreateRegistroIngresoEgresoCommandHandler(
             rolId = zonaRolConRol.RolId;
             zonaId = zonaRol.ZonaId;
         }
+
+        // ===== NUEVA VALIDACIÓN NO FATAL: SECUENCIA ENTRADA/SALIDA =====
+        // Solo aplicar si aún no ha sido denegado y el estado es Autorizado
+        if (!esDenegado && estadoRegistro.Descripcion == "Autorizado" && estadoRegistro.AfectaEspacio)
+        {
+            var (esValido, mensajeError) = await ValidarSecuenciaEntradaSalida(
+                command.UsuarioId,
+                esEntrada,
+                cancellationToken);
+
+            if (!esValido)
+            {
+                observacion = mensajeError;
+                esDenegado = true;
+            }
+        }
+        // ===== FIN VALIDACIÓN SECUENCIA =====
 
         // 2. Si ya es denegado, no seguimos validando
         if (!esDenegado)
