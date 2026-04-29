@@ -24,6 +24,16 @@ internal sealed class DispositivoEstadoNotifier : IDispositivoEstadoNotifier
                 "ReceiveEstadoDispositivo",
                 new { data, timestamp = DateTime.UtcNow },
                 cancellationToken);
+
+            await _hubContext.Clients.All.SendAsync(
+                "ReceiveEstadoDispositivo",
+                new
+                {
+                    dispositivoId,
+                    data,
+                    timestamp = DateTime.UtcNow
+                },
+                cancellationToken);
         }
     }
 }
