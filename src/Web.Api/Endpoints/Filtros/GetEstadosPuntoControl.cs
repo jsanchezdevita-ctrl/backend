@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Messaging;
 using Application.Filtros.GetEstadosPuntoControl;
+using Microsoft.AspNetCore.Mvc;
 using SharedKernel;
 using Web.Api.Extensions;
 using Web.Api.Infrastructure;
@@ -15,9 +16,12 @@ internal sealed class GetEstadosPuntoControl : IEndpoint
             CancellationToken cancellationToken,
             int page = 1,
             int pageSize = 10,
-            string? search = null) =>
+            string? search = null,
+            [FromQuery(Name = "query")] string? query = null) =>
         {
-            var filtroQuery = new GetEstadosPuntoControlQuery(page, pageSize, search);
+            var finalSearch = search ?? query;
+
+            var filtroQuery = new GetEstadosPuntoControlQuery(page, pageSize, finalSearch);
 
             Result<PagedResponse<EnumFiltroItemResponse>> result = await handler.Handle(filtroQuery, cancellationToken);
 
