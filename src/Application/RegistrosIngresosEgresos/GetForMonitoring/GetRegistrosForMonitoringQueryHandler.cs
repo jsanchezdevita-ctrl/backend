@@ -92,7 +92,8 @@ internal sealed class GetRegistrosForMonitoringQueryHandler(IApplicationDbContex
                 x.PuntoControl.Ubicacion,
                 new EstadoInfo(
                     x.EstadoRegistro.Id,
-                    x.EstadoRegistro.Descripcion)));
+                    x.EstadoRegistro.Descripcion),
+                x.Registro.Observacion ?? ""));
 
         return await registrosQuery.ToPagedResponseAsync(
             query.Page, query.PageSize, cancellationToken);

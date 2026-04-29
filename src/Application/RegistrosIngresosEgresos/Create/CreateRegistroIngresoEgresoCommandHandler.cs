@@ -193,8 +193,8 @@ internal sealed class CreateRegistroIngresoEgresoCommandHandler(
             PuntoEntradaId = command.PuntoEntradaId,
             PuntoSalidaId = command.PuntoSalidaId,
             EstadoRegistroId = estadoFinalId,
-            ZonaId = esDenegado ? null : zonaId,
-            RolId = esDenegado ? null : rolId,
+            ZonaId = zonaId,
+            RolId = rolId,
             Observacion = observacion
         };
 
