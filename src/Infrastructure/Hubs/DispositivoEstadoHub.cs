@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 
 namespace Infrastructure.Hubs;
-
+// 1. C
 public class DispositivoEstadoHub : Hub
 {
     private static readonly ConcurrentDictionary<string, Guid> _dispositivosMonitoreados = new();
