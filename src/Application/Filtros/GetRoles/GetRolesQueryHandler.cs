@@ -17,7 +17,8 @@ internal sealed class GetRolesQueryHandler(IApplicationDbContext context)
         if (!string.IsNullOrWhiteSpace(query.SearchTerm))
         {
             baseQuery = baseQuery.SearchByTerm(query.SearchTerm,
-                x => x.Descripcion);
+                x => x.Descripcion,
+                x => x.NombreRol);
         }
 
         var resultQuery = baseQuery.Select(er => new FiltroItemResponse(
