@@ -47,4 +47,16 @@ public static class RegistroIngresoEgresoErrors
     public static readonly Error AmbosPuntosNoPermitidos = Error.Validation(
         "RegistrosIngresosEgresos.AmbosPuntosNoPermitidos",
         "No se permiten puntos de entrada y salida simultáneamente");
+
+    public static readonly Error InvalidSequenceEntryWithoutExit = Error.Validation(
+    "Registros.InvalidSequence",
+    "Ya tiene una entrada activa. Debe registrar una salida primero");
+
+    public static readonly Error InvalidSequenceExitWithoutEntry = Error.Validation(
+        "Registros.InvalidSequence",
+        "No tiene una entrada activa para registrar una salida");
+
+    public static readonly Error InvalidSequenceFirstRecordMustBeEntry = Error.Validation(
+        "Registros.InvalidSequence",
+        "El primer registro debe ser una entrada");
 }

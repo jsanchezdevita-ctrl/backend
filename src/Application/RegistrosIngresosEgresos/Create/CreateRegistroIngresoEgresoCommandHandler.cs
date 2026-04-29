@@ -75,6 +75,23 @@ internal sealed class CreateRegistroIngresoEgresoCommandHandler(
         Guid? zonaId = null;
         bool esDenegado = false;
 
+        // ===== NUEVA VALIDACIÓN NO FATAL: SECUENCIA ENTRADA/SALIDA =====
+        // Solo aplicar si aún no ha sido denegado y el estado es Autorizado
+        if (!esDenegado && estadoRegistro.Descripcion == "Autorizado" && estadoRegistro.AfectaEspacio)
+        {
+            var (esValido, mensajeError) = await ValidarSecuenciaEntradaSalida(
+                command.UsuarioId,
+                esEntrada,
+                cancellationToken);
+
+            if (!esValido)
+            {
+                observacion = mensajeError;
+                esDenegado = true;
+            }
+        }
+        // ===== FIN VALIDACIÓN SECUENCIA =====
+
         // 1. Validar ZonaRol
         var zonaRolConRol = await context.ZonasRoles
             .Where(zr => zr.Id == command.ZonaRolId)
@@ -259,5 +276,64 @@ internal sealed class CreateRegistroIngresoEgresoCommandHandler(
                     cancellationToken);
             }
         }
+    }
+
+    /// <summary>
+    /// Valida la secuencia entrada/salida del usuario
+    /// </summary>
+    /// <returns>(EsValido, MensajeError)</returns>
+    private async Task<(bool EsValido, string MensajeError)> ValidarSecuenciaEntradaSalida(
+        Guid usuarioId,
+        bool esEntrada,
+        CancellationToken cancellationToken)
+    {
+        // Buscar el último registro del usuario (solo los que afectan espacio = Autorizados)
+        var ultimoRegistro = await context.RegistrosIngresosEgresos
+            .Where(r => r.UsuarioId == usuarioId)
+            .Join(context.EstadosRegistro,
+                r => r.EstadoRegistroId,
+                e => e.Id,
+                (r, e) => new { Registro = r, Estado = e })
+            .Where(re => re.Estado.AfectaEspacio) // Solo registros exitosos (Autorizados)
+            .OrderByDescending(re => re.Registro.Fecha)
+            .Select(re => re.Registro)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        // Caso 1: No existe ningún registro previo exitoso
+        if (ultimoRegistro is null)
+        {
+            if (!esEntrada)
+            {
+                return (false, "No tiene una entrada activa para registrar una salida. El primer registro debe ser una entrada.");
+            }
+            return (true, string.Empty);
+        }
+
+        // Determinar si el último registro fue entrada o salida
+        bool ultimoFueEntrada = ultimoRegistro.PuntoEntradaId.HasValue && !ultimoRegistro.PuntoSalidaId.HasValue;
+        bool ultimoFueSalida = !ultimoRegistro.PuntoEntradaId.HasValue && ultimoRegistro.PuntoSalidaId.HasValue;
+
+        // Caso 2: Último registro fue ENTRADA
+        if (ultimoFueEntrada)
+        {
+            if (esEntrada)
+            {
+                return (false, "Ya tiene una entrada activa. Debe registrar una salida primero.");
+            }
+            return (true, string.Empty);
+        }
+
+        // Caso 3: Último registro fue SALIDA
+        if (ultimoFueSalida)
+        {
+            if (!esEntrada)
+            {
+                return (false, "No tiene una entrada activa para registrar una salida.");
+            }
+            return (true, string.Empty);
+        }
+
+        // Caso 4: Caso improbable (registro corrupto sin entrada ni salida)
+        return (true, string.Empty);
     }
 }
