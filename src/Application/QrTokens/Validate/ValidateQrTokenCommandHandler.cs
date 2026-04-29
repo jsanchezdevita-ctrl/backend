@@ -151,7 +151,7 @@ internal sealed class ValidateQrTokenCommandHandler(
             else
             {
                 // Para salida: debe haber alguien dentro
-                if (zonaRol.EspacioUtilizado > 0)
+                if (zonaRol.EspacioUtilizado >= 0)
                 {
                     return zonaRol;
                 }
