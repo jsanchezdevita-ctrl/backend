@@ -16,24 +16,25 @@ internal sealed class DispositivoEstadoNotifier : IDispositivoEstadoNotifier
 
     public async Task NotificarCambioDispositivo(Guid dispositivoId, DispositivoCompletoResponse data, CancellationToken cancellationToken = default)
     {
-        var conexiones = DispositivoEstadoHub.ObtenerConexionesPorDispositivo(dispositivoId);
+        //var conexiones = DispositivoEstadoHub.ObtenerConexionesPorDispositivo(dispositivoId);
 
-        foreach (var connectionId in conexiones)
+        await _hubContext.Clients.All.SendAsync(
+            "ReceiveEstadoDispositivo",
+            new
+            {
+                dispositivoId,
+                data,
+                timestamp = DateTime.UtcNow
+            },
+            cancellationToken);
+
+        /*foreach (var connectionId in conexiones)
         {
-            /*await _hubContext.Clients.Client(connectionId).SendAsync(
+            await _hubContext.Clients.Client(connectionId).SendAsync(
                 "ReceiveEstadoDispositivo",
                 new { data, timestamp = DateTime.UtcNow },
-                cancellationToken);*/
+                cancellationToken);
 
-            /*await _hubContext.Clients.All.SendAsync(
-                "ReceiveEstadoDispositivo",
-                new
-                {
-                    dispositivoId,
-                    data,
-                    timestamp = DateTime.UtcNow
-                },
-                cancellationToken);*/
-        }
+        }*/
     }
 }
