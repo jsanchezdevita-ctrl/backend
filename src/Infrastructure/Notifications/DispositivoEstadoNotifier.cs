@@ -20,10 +20,10 @@ internal sealed class DispositivoEstadoNotifier : IDispositivoEstadoNotifier
 
         foreach (var connectionId in conexiones)
         {
-            await _hubContext.Clients.Client(connectionId).SendAsync(
+            /*await _hubContext.Clients.Client(connectionId).SendAsync(
                 "ReceiveEstadoDispositivo",
                 new { data, timestamp = DateTime.UtcNow },
-                cancellationToken);
+                cancellationToken);*/
 
             /*await _hubContext.Clients.All.SendAsync(
                 "ReceiveEstadoDispositivo",
