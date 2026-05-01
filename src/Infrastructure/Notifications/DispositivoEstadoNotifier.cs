@@ -25,7 +25,7 @@ internal sealed class DispositivoEstadoNotifier : IDispositivoEstadoNotifier
                 new { data, timestamp = DateTime.UtcNow },
                 cancellationToken);
 
-            await _hubContext.Clients.All.SendAsync(
+            /*await _hubContext.Clients.All.SendAsync(
                 "ReceiveEstadoDispositivo",
                 new
                 {
@@ -33,7 +33,7 @@ internal sealed class DispositivoEstadoNotifier : IDispositivoEstadoNotifier
                     data,
                     timestamp = DateTime.UtcNow
                 },
-                cancellationToken);
+                cancellationToken);*/
         }
     }
 }

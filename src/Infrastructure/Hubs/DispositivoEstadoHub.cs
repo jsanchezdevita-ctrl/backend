@@ -114,11 +114,11 @@ public class DispositivoEstadoHub : Hub
                 timestamp = DateTime.UtcNow
             });
 
-            await Clients.All.SendAsync("ReceiveEstadoDispositivo", new
+            /*await Clients.All.SendAsync("ReceiveEstadoDispositivo", new
             {
                 data = result.Value,
                 timestamp = DateTime.UtcNow
-            });
+            });*/
 
 
         }
