@@ -42,6 +42,7 @@ builder.Services.AddCors(options =>
             .WithOrigins("http://localhost:3000",
             "https://login-gamma-mauve.vercel.app",
             "https://control-acceso-admin.vercel.app",
+            "https://render-control-acceso-admin.vercel.app",
             "https://ucsa-panel-cliente-estacionamiento.vercel.app",
             "http://localhost:3000",
             "https://ucsa-panel-cliente-estacionamiento.vercel.app",
