@@ -44,7 +44,8 @@ builder.Services.AddCors(options =>
             "https://control-acceso-admin.vercel.app",
             "https://ucsa-panel-cliente-estacionamiento.vercel.app",
             "http://localhost:3000",
-            "https://ucsa-panel-cliente-estacionamiento.vercel.app")
+            "https://ucsa-panel-cliente-estacionamiento.vercel.app",
+            "https://render-ucsa-panel-cliente-estaciona.vercel.app")
             //.AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader()
