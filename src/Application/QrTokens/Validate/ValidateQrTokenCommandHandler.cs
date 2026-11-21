@@ -57,6 +57,7 @@ internal sealed class ValidateQrTokenCommandHandler(
 
         // 3. Buscar Zona válida para el RolId del QR
         var zonaRol = await EncontrarZonaRolValidaAsync(
+            qrToken.UsuarioId,
             qrToken.RolId,
             puntoControlId,
             esEntrada,
@@ -71,7 +72,7 @@ internal sealed class ValidateQrTokenCommandHandler(
         {
             observacion = esEntrada
                 ? "No hay zona disponible con capacidad para entrada"
-                : "No hay zona con espacio utilizado para salida";
+                : "No se encontró una entrada activa en una zona con este punto de salida";
 
             logger.LogInformation("QR validado pero sin zona disponible: {QrToken}, Motivo: {Observacion}",
                 command.QrToken, observacion);
@@ -122,12 +123,19 @@ internal sealed class ValidateQrTokenCommandHandler(
     }
 
     private async Task<ZonaRol?> EncontrarZonaRolValidaAsync(
+        Guid usuarioId,
         Guid rolId,
         Guid puntoControlId,
         bool esEntrada,
         CancellationToken cancellationToken)
     {
-        // Buscar zonas donde el rol tiene acceso y que tengan este punto de control
+        if (!esEntrada)
+        {
+            return await EncontrarZonaRolParaSalidaAsync(usuarioId, rolId, puntoControlId, cancellationToken);
+        }
+
+        // Buscar zonas donde el rol tiene acceso y que tengan este punto de control,
+        // ordenadas por nombre de zona para que la asignación entre zonas candidatas sea determinística
         var zonasCandidatas = await context.ZonasRoles
             .Where(zr => zr.RolId == rolId && !zr.Deleted)
             .Join(context.ZonasPuntosControl
@@ -135,30 +143,63 @@ internal sealed class ValidateQrTokenCommandHandler(
                 zr => zr.ZonaId,
                 zpc => zpc.ZonaId,
                 (zr, _) => zr)
+            .Join(context.Zonas,
+                zr => zr.ZonaId,
+                z => z.Id,
+                (zr, z) => new { ZonaRol = zr, z.Nombre })
+            .OrderBy(x => x.Nombre)
+            .Select(x => x.ZonaRol)
             .ToListAsync(cancellationToken);
 
-        // Filtrar por capacidad según tipo de acceso
+        // Para entrada: tomar la primera zona (en orden alfabético) con espacio disponible
         foreach (var zonaRol in zonasCandidatas)
         {
-            if (esEntrada)
+            if (zonaRol.EspacioUtilizado < zonaRol.CapacidadMaxima)
             {
-                // Para entrada: debe haber espacio disponible
-                if (zonaRol.EspacioUtilizado < zonaRol.CapacidadMaxima)
-                {
-                    return zonaRol;
-                }
-            }
-            else
-            {
-                // Para salida: debe haber alguien dentro
-                if (zonaRol.EspacioUtilizado >= 0)
-                {
-                    return zonaRol;
-                }
+                return zonaRol;
             }
         }
 
         return null;
+    }
+
+    private async Task<ZonaRol?> EncontrarZonaRolParaSalidaAsync(
+        Guid usuarioId,
+        Guid rolId,
+        Guid puntoControlId,
+        CancellationToken cancellationToken)
+    {
+        // La salida debe registrarse en la misma zona donde el usuario tiene la entrada activa,
+        // no en cualquier zona candidata con el punto de control compartido.
+        var ultimoRegistro = await context.RegistrosIngresosEgresos
+            .Where(r => r.UsuarioId == usuarioId)
+            .Join(context.EstadosRegistro,
+                r => r.EstadoRegistroId,
+                e => e.Id,
+                (r, e) => new { Registro = r, Estado = e })
+            .Where(re => re.Estado.AfectaEspacio)
+            .OrderByDescending(re => re.Registro.Fecha)
+            .Select(re => re.Registro)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        bool tieneEntradaActiva = ultimoRegistro is not null
+            && ultimoRegistro.PuntoEntradaId.HasValue
+            && !ultimoRegistro.PuntoSalidaId.HasValue
+            && ultimoRegistro.ZonaId.HasValue;
+
+        if (!tieneEntradaActiva)
+        {
+            return null;
+        }
+
+        return await context.ZonasRoles
+            .Where(zr => zr.ZonaId == ultimoRegistro!.ZonaId && zr.RolId == rolId && !zr.Deleted)
+            .Join(context.ZonasPuntosControl
+                .Where(zpc => zpc.PuntoControlId == puntoControlId && !zpc.Deleted),
+                zr => zr.ZonaId,
+                zpc => zpc.ZonaId,
+                (zr, _) => zr)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     private async Task<Guid> DeterminarEstadoRegistroAsync(
